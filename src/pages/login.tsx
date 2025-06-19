@@ -5,6 +5,7 @@ import {
   IonContent,
   IonInput,
   IonButton,
+  IonImg,
   // IonItem,
   IonSpinner,
   // IonLabel,
@@ -65,6 +66,11 @@ const Login: React.FC = () => {
     <IonPage>
       <IonContent className="ion-padding login-page" fullscreen>
         <div className='login-container'>
+          <IonImg
+            src="/pti_logo.png"
+            style={{ width: '100px', height: '64px', marginBottom: '20px' }}
+            alt="PTI Logo"
+          />
           <h2>SOS SECURITY LOGIN</h2>
             <IonInput
               label="Email"
