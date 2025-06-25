@@ -1,0 +1,28 @@
+/* src/components/Menu.css */
+:root {
+  --ion-item-background: none !important;
+}
+
+ion-menu {
+  --width: 230px;
+}
+
+ion-list {
+  padding-top: 10px;
+  background: none !important;
+}
+
+ion-item {
+  --padding-start: 16px;
+  font-weight: 500;
+  background: none !important;
+}
+
+ion-header ion-toolbar {
+  --background: var(--ion-color-primary);
+  color: white;
+}
+
+ion-title {
+  font-weight: 600;
+}

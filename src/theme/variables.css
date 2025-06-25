@@ -1,8 +1,15 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
+:root {
+  --ion-color-white: #fff !important;
+}
+
+.ion-color-white {
+  --ion-color-base: var(--ion-color-white);
+}
 
 ion-app {
-  max-width: 800px;
+  /* max-width: 800px; */
   width: 100%;
   margin: 0 auto;
 }
@@ -27,4 +34,20 @@ ion-fab-button {
 
 h1, h2, h3, h4, h5, h6, ion-title, ion-spinner {
   color: #fff !important;
+}
+
+button > span {
+  color: #fff !important;
+}
+
+@media (max-width: 767px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .hide-on-desktop {
+    display: none !important;
+  }
 }

@@ -10,12 +10,18 @@ import {
   IonToolbar,
   IonTitle,
   IonSpinner,
+  IonButtons,
+  IonMenuButton,
+  IonIcon,
   // IonItem,
 } from '@ionic/react';
-
+import { logOutOutline } from 'ionicons/icons';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { auth, db } from '../lib/firebase';
+import { signOut } from 'firebase/auth';
 import './settings.css';
+import { playClickSound } from '../lib/utils';
+import { MuteButton } from '../components/MuteButton';
 
 const SETTINGS_DOC_ID = 'emergencyContacts';
 
@@ -48,6 +54,7 @@ const Settings: React.FC = () => {
 
   // Save contacts globally
   const saveContacts = async () => {
+    await playClickSound('apple');
     setLoading(true);
     const ref = doc(db, 'settings', SETTINGS_DOC_ID);
     await setDoc(ref, {
@@ -59,11 +66,31 @@ const Settings: React.FC = () => {
     setLoading(false);
   };
 
+  const handleLogout = async () => {
+    await playClickSound('apple');
+    await signOut(auth);
+    history.replace('/login');
+  };
+
+  const handleRouteBack = async () => {
+    await playClickSound('apple');
+    history.goBack();
+  }
+
   return (
-    <IonPage>
+    <IonPage id="main">
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar color="primary">
+          <IonButtons slot="start">
+            <IonMenuButton />
+          </IonButtons>
           <IonTitle>📞 Emergency Contact Settings</IonTitle>
+          <IonButtons slot="end">
+            <MuteButton />
+            <IonButton onClick={handleLogout} color="white">
+              <IonIcon icon={logOutOutline} slot="icon-only" />
+            </IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
@@ -95,7 +122,7 @@ const Settings: React.FC = () => {
           <IonButton disabled={loading} expand="block" onClick={saveContacts} className="ion-margin-top">
             {loading ? <IonSpinner color="light" /> : 'Save Contact'}
           </IonButton>
-          <IonButton color="medium" expand="block" onClick={() => history.push('/dashboard')} className="ion-margin-top">
+          <IonButton color="medium" expand="block" onClick={() => handleRouteBack()} className="ion-margin-top">
             Go Back
           </IonButton>
         </div>

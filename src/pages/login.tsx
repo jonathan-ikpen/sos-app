@@ -17,6 +17,7 @@ import { useHistory } from 'react-router-dom';
 import { FirebaseX } from '@awesome-cordova-plugins/firebase-x';
 import { setDoc, doc } from 'firebase/firestore';
 import "./login.css"
+import { playClickSound } from '../lib/utils';
 
 const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -41,6 +42,7 @@ const Login: React.FC = () => {
   }
 
   const handleLogin = async () => {
+    await playClickSound('apple');
     setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -63,13 +65,14 @@ const Login: React.FC = () => {
   };
 
   return (
-    <IonPage>
-      <IonContent className="ion-padding login-page" fullscreen>
+    <IonPage className="login-page">
+      <IonContent className="ion-padding login-content" fullscreen>
         <div className='login-container'>
           <IonImg
             src="/pti_logo.png"
             style={{ width: '100px', height: '64px', marginBottom: '20px' }}
             alt="PTI Logo"
+            onClick={() => history.push('/')}
           />
           <h2>SOS SECURITY LOGIN</h2>
             <IonInput

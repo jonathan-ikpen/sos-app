@@ -1,23 +1,18 @@
-import { Redirect, Route } from 'react-router-dom';
+import { Switch, Redirect, Route } from 'react-router-dom';
 import {
   IonApp,
-  IonIcon,
-  IonLabel,
   IonRouterOutlet,
-  IonTabBar,
-  IonTabButton,
-  IonTabs,
-  setupIonicReact
+  setupIonicReact,
+  IonSplitPane
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { ellipse, square, triangle } from 'ionicons/icons';
-import Tab1 from './pages/Tab1';
-import Tab2 from './pages/Tab2';
-import Tab3 from './pages/Tab3';
 import SOS from './pages/sos';
 import Login from './pages/login';
 import Dashboard from './pages/dashboard';
+import Dashboard2 from './pages/old-dashboard';
 import Settings from './pages/settings';
+// import MapPageLeaflet from './pages/MapPageLeaflet';
+import MapPageGoogle from './pages/MapPageGoogle';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -48,56 +43,62 @@ import '@ionic/react/css/palettes/dark.system.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import 'leaflet/dist/leaflet.css';
 
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './context/auth_context';
+import Menu from './components/Menu';
+import { Loader } from './components/Loader';
 
 setupIonicReact();
 
-const App: React.FC = () => (
-  <IonApp>
-    <AuthProvider>
-      <IonReactRouter>
-        <IonTabs>
-          <IonRouterOutlet>
+const AppRouter = () => {
+  const { user, loading } = useAuth();
 
-            <Route exact path="/sos" component={SOS} />
-            <Redirect exact from="/" to="/sos" />
-            <Route path="/login" component={Login} exact />
-            <ProtectedRoute path="/settings" component={Settings} exact />
+  if (loading) return <Loader />;
+
+  return (
+    <IonReactRouter>
+      <IonSplitPane contentId="main">
+        {user && <Menu />}
+        <IonRouterOutlet id="main">
+          <Switch>
+            {/* Protected Routes */}
             <ProtectedRoute path="/dashboard" component={Dashboard} exact />
+            <ProtectedRoute path="/dashboard2" component={Dashboard2} exact />
+            <ProtectedRoute path="/settings" component={Settings} exact />
+            <ProtectedRoute path="/map" component={MapPageGoogle} exact />
+            <ProtectedRoute path="/map/:lat/:lng" component={MapPageGoogle} exact />
 
-            <Route exact path="/tab1">
-              <Tab1 />
+            {/* Public Routes */}
+            <Route exact path="/sos" component={SOS} />
+            <Route exact path="/login" component={Login} />
+
+            {/* Default redirect from "/" */}
+            <Route exact path="/">
+              <Redirect to={user ? "/dashboard" : "/sos"} />
             </Route>
-            <Route exact path="/tab2">
-              <Tab2 />
+
+            {/* Catch-all: only triggers if none above matched */}
+            <Route path="*">
+              <Redirect to={user ? "/dashboard" : "/login"} />
             </Route>
-            <Route path="/tab3">
-              <Tab3 />
-            </Route>
-
-          </IonRouterOutlet>
-
-          <IonTabBar className='hide' slot="bottom">
-            <IonTabButton tab="tab1" href="/tab1">
-              <IonIcon aria-hidden="true" icon={triangle} />
-              <IonLabel>Tab 1</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="tab2" href="/tab2">
-              <IonIcon aria-hidden="true" icon={ellipse} />
-              <IonLabel>Tab 2</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="tab3" href="/tab3">
-              <IonIcon aria-hidden="true" icon={square} />
-              <IonLabel>Tab 3</IonLabel>
-            </IonTabButton>
-          </IonTabBar>
-
-        </IonTabs>
-      </IonReactRouter>
-    </AuthProvider>
-  </IonApp>
+          </Switch>
+        </IonRouterOutlet>
+      </IonSplitPane>
+    </IonReactRouter>
   );
+};
+
+const App: React.FC = () => {
+  return (
+    <IonApp>
+      <AuthProvider>
+        <AppRouter />
+      </AuthProvider>
+    </IonApp>
+  );
+};
 
 export default App;

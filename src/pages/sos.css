@@ -1,5 +1,5 @@
 :root {
-    --ion-toolbar-background: #000 !important;
+    --ion-toolbar-background: none !important;
     --ion-toolbar-background-color: #000 !important;
     --ion-background-color: #000 !important;
     --background: #000;
@@ -12,6 +12,12 @@ ion-toolbar:first-of-type {
 }
 
 .sos-page {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.sos-content {
   display: flex;
   justify-content: center;
   align-items: center;

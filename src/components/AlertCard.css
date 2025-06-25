@@ -1,0 +1,25 @@
+/* src/components/AlertCard.css */
+ion-card {
+  margin-bottom: 1rem;
+  border-left: 6px solid var(--ion-color-warning);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+ion-card:hover {
+  transform: scale(1.01);
+}
+
+ion-card-title {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+ion-card-subtitle {
+  color: var(--ion-color-medium);
+    font-size: 0.9rem;
+}
+
+ion-card[aria-disabled="true"] {
+  border-left-color: var(--ion-color-medium);
+}

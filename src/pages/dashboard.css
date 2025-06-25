@@ -1,0 +1,19 @@
+/* ----------------------------------------------- */
+.dashboard-content {
+  padding: 1rem;
+  background-color: #f5f5f5;
+}
+
+/* src/components/AlertCard.css */
+ion-card {
+  margin-bottom: 1rem;
+  border-left: 5px solid var(--ion-color-danger);
+}
+ion-card[aria-disabled="true"] {
+  border-left-color: var(--ion-color-medium);
+}
+
+/* src/components/Menu.css */
+ion-menu {
+  --width: 220px;
+}

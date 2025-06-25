@@ -13,7 +13,7 @@ import {
 //   IonTitle,
   IonSpinner,
 } from '@ionic/react';
-import { sendNotifications, sendSMS, saveToDatabase, getGeoLocation } from '../lib/utils';
+import { sendNotifications, sendSMS, saveToDatabase, getGeoLocation, playClickSound } from '../lib/utils';
 
 import './sos.css';
 
@@ -26,6 +26,7 @@ const SOS: React.FC = () => {
   const [message, setMessage] = useState({ title: '', subheader: '', body: '' });
 
   const handleSOS = async () => {
+    await playClickSound('apple');
     setLoading(true);
     try {
       // 1. Get current location
@@ -60,8 +61,8 @@ const SOS: React.FC = () => {
   }
 
   return (
-    <IonPage style={{ backgroundColor: '#000', color: '#fff' }}>
-      <IonContent fullscreen className="sos-page">
+    <IonPage className="sos-page" style={{ backgroundColor: '#000', color: '#fff' }}>
+      <IonContent fullscreen className="sos-content">
         <div className="sos-container">
           <button
             className="sos-button"

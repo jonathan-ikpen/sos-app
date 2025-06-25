@@ -1,0 +1,36 @@
+/* map.css */
+.leaflet-container, .leaflet-pane, .leaflet-map-pane {
+  height: 100%;
+  width: 100%;
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+}
+
+.loading-map {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 90vh;
+}
+
+.map-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.map-container {
+  /* padding: 20px; */
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  /* margin-top: 30%; */
+}

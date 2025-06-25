@@ -101,6 +101,25 @@ export async function getGeoLocation() {
     return {locationLink, latitude, longitude};
 }
 
+export async function playClickSound(choice: 'apple' | 'pop') {
+
+  // 🔊 Play click sound
+  if (choice === 'apple') {
+    // Use Apple click sound
+    const audio = new Audio('/sounds/apple-mouse-click.mp3');
+    audio.volume = 1.0;
+    await audio.play().catch((err) => console.warn('Audio play failed', err));
+    return;
+  } else if (choice === 'pop') {
+    // Use Pop click sound
+    const audio = new Audio('/sounds/suction-pop.mp3');
+    audio.volume = 1.0;
+    await audio.play().catch((err) => console.warn('Audio play failed', err));
+    return;
+  }
+
+}
+
 
 export const setupFCMListener = (history: History) => {
   const sub = FirebaseX.onMessageReceived().subscribe((data) => {
@@ -181,4 +200,40 @@ export const getEmergencyContacts = async () => {
   const snap = await getDoc(ref);
   return snap.exists() ? snap.data() : null;
 };
+
+export function muteAllAudio() {
+  const mediaElements = Array.from(
+    document.querySelectorAll<HTMLMediaElement>('audio, video')
+  );
+
+  mediaElements.forEach((el) => {
+    try {
+      el.muted = true;
+      el.volume = 0;
+      el.pause();
+    } catch (err) {
+      console.warn('Failed to mute media element:', err);
+    }
+  });
+
+  console.log(`[Audio] Muted ${mediaElements.length} media element(s)`);
+}
+
+export function unmuteAllAudio() {
+  const mediaElements = Array.from(
+    document.querySelectorAll<HTMLMediaElement>('audio, video')
+  );
+
+  mediaElements.forEach((el) => {
+    try {
+      el.muted = false;
+      el.volume = 1.0;
+      // el.play(); // Optional: autoplay if needed
+    } catch (err) {
+      console.warn('Failed to unmute media element:', err);
+    }
+  });
+
+  console.log(`[Audio] Unmuted ${mediaElements.length} media element(s)`);
+}
 
