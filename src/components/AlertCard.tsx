@@ -12,7 +12,7 @@ import {
 import { checkmarkDoneOutline } from 'ionicons/icons';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { playClickSound } from '../lib/utils';
+import { playClickSound, stopEmergencyTone } from '../lib/utils';
 import './AlertCard.css';
 
 interface Alert {
@@ -27,6 +27,7 @@ const AlertCard: React.FC<{ alert: Alert; onResolve: () => void }> = ({ alert, o
   const history = useHistory();
 
   const markAsResolved = async () => {
+    stopEmergencyTone();
     playClickSound('pop').then(async () => {
       await updateDoc(doc(db, 'alerts', alert.id), { resolved: true });
       onResolve();

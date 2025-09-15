@@ -8,6 +8,42 @@ import { FirebaseX } from '@awesome-cordova-plugins/firebase-x';
 import { addNotificationToast } from './toast';
 // import { showIonAlert } from './alerts';
 
+// add singleton emergency tone controller
+let emergencyAudio: HTMLAudioElement | null = null;
+let emergencyWasPlayingBeforeMute = false;
+
+export function startEmergencyTone() {
+  try {
+    if (!emergencyAudio) {
+      emergencyAudio = new Audio('/sounds/sos.mp3');
+      emergencyAudio.preload = 'auto';
+      emergencyAudio.loop = true;
+      emergencyAudio.volume = 1.0;
+    }
+    // try play, catch autoplay block
+    emergencyAudio.play().catch((err) => {
+      console.warn('Emergency tone play blocked (user gesture required):', err);
+    });
+  } catch (err) {
+    console.warn('startEmergencyTone error', err);
+  }
+}
+
+export function stopEmergencyTone() {
+  try {
+    if (emergencyAudio) {
+      emergencyAudio.pause();
+      emergencyAudio.currentTime = 0;
+    }
+  } catch (err) {
+    console.warn('stopEmergencyTone error', err);
+  }
+}
+
+export function playEmergencyTone() {
+  return [startEmergencyTone, stopEmergencyTone];
+}
+
 export async function sendNotifications(locationLink: string) {
 
     // Fetch all admin FCM tokens from Firestore
@@ -125,15 +161,11 @@ export const setupFCMListener = (history: History) => {
   const sub = FirebaseX.onMessageReceived().subscribe((data) => {
     console.log('FCM Message received:', data);
 
-    // 🔊 Create and play the audio
-    const audio = new Audio('/sounds/sos.mp3');
-    audio.volume = 1.0;
-    audio.loop = true;
-    audio.play().catch((err) => console.warn('Audio play failed', err));
+    // Use shared audio controller
+    startEmergencyTone();
 
     const stopSound = () => {
-      audio.pause();
-      audio.currentTime = 0; // reset
+      stopEmergencyTone();
     };
 
     if (data.tap) {
@@ -216,6 +248,17 @@ export function muteAllAudio() {
     }
   });
 
+  // Also mute/stop emergency audio and remember if it was playing
+  try {
+    if (emergencyAudio) {
+      emergencyWasPlayingBeforeMute = !emergencyAudio.paused;
+      emergencyAudio.muted = true;
+      emergencyAudio.pause();
+    }
+  } catch (err) {
+    console.warn('Failed to mute emergency audio:', err);
+  }
+
   console.log(`[Audio] Muted ${mediaElements.length} media element(s)`);
 }
 
@@ -234,6 +277,41 @@ export function unmuteAllAudio() {
     }
   });
 
+  // Restore emergency audio state if it was playing before mute.
+  try {
+    if (emergencyAudio) {
+      emergencyAudio.muted = false;
+      if (emergencyWasPlayingBeforeMute) {
+        emergencyAudio.play().catch((err) => {
+          // autoplay can be blocked; user gesture will be required
+          console.warn('Failed to resume emergency audio on unmute:', err);
+        });
+      }
+      emergencyWasPlayingBeforeMute = false;
+    }
+  } catch (err) {
+    console.warn('Failed to unmute emergency audio:', err);
+  }
+
   console.log(`[Audio] Unmuted ${mediaElements.length} media element(s)`);
+}
+
+export function playEmergencyAlertSoundV2() {
+      // 🔊 Create and play the audio
+    const audio = new Audio('/sounds/sos.mp3');
+
+    const startSound = () => {
+      audio.volume = 1.0;
+      audio.loop = true;
+      audio.play().catch((err) => console.warn('Audio play failed', err));
+    }
+
+    const stopSound = () => {
+      audio.pause();
+      audio.currentTime = 0; // reset
+    };
+
+    return [startSound, stopSound];
+
 }
 

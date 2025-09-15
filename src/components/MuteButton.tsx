@@ -1,16 +1,19 @@
 import { volumeHighOutline, volumeMuteOutline } from "ionicons/icons";
 import { IonButton, IonIcon } from "@ionic/react";
 import { useState } from "react";
-import { muteAllAudio, unmuteAllAudio } from "../lib/utils";
+import { muteAllAudio, unmuteAllAudio, stopEmergencyTone } from "../lib/utils";
 
 
 export const MuteButton = () => {
-    const [muted, setMuted] = useState(false);
+    const [muted, setMuted] = useState(true);
 
     const handleSound = () => {
-        setMuted(!muted);
-        if(muted) {
+        const next = !muted;
+        setMuted(next);
+
+        if(next) {
             muteAllAudio();
+            stopEmergencyTone();
         } else {
             unmuteAllAudio();
         }

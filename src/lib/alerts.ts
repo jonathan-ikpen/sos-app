@@ -5,6 +5,7 @@ import {
   onSnapshot,
   Firestore,
 } from 'firebase/firestore';
+import { startEmergencyTone, stopEmergencyTone } from './utils';
 
 interface Alert {
   id: string;
@@ -25,6 +26,9 @@ export const subscribeToAlerts = (
   callback: (alerts: Alert[]) => void
 ) => {
   const q = query(collection(db, 'alerts'), orderBy('timestamp', 'desc'));
+  console.log("Subscribing to alerts & Playing tone on new alert");
+
+  let isInitialSnapshot = true;
 
   const unsubscribe = onSnapshot(q, (snapshot) => {
     const alerts: Alert[] = snapshot.docs.map((doc) => ({
@@ -32,8 +36,30 @@ export const subscribeToAlerts = (
       ...doc.data(),
     })) as Alert[];
 
+
+    let playedForThisSnapshot = false;
+    snapshot.docChanges().forEach((change) => {
+      if (!isInitialSnapshot && change.type === 'added') {
+        startEmergencyTone();
+        playedForThisSnapshot = true;
+      }
+    });
+
+    // after processing the first snapshot mark it so future snapshots trigger sounds
+    if (isInitialSnapshot) {
+      isInitialSnapshot = false;
+    }
+
+    // Optional: auto-stop after 20s if started
+    if (playedForThisSnapshot) {
+      setTimeout(() => {
+        stopEmergencyTone();
+      }, 60000);
+    }
+
     callback(alerts);
   });
+
 
   return unsubscribe;
 };
